@@ -33,7 +33,7 @@ df_raw = pd.read_csv('/Users/alyssa/Desktop/case.study/AirQualityUCI.csv')
 please download AirQualityUCI.csv and change the path to your own.
 
 ## Docker
-Please download the entire "Docker" folder and and refrain from moving the files inside unless you are able to modify the file paths for reading. 
+Please download the entire "Docker" folder and refrain from moving the files inside unless you are able to modify the file paths for reading. 
 Please also ensure you have downloaded Docker on your device.
 ## Website
 After downloading the Docker folder, you can use it to create an image yourself. Alternatively, you can visit Docker Hub, where I have uploaded the image at the following URL: https://hub.docker.com/repository/docker/alyssayao/predict/  
