@@ -24,7 +24,7 @@ pip install scipy==1.11.4 scikit-learn==1.2.2 Flask==2.2.5 pandas==2.2.1 numpy==
 
 ## Alyssa_case_study.ipynb
 This file primarily focuses on data preprocessing, model fitting, and model selection.  
-Comments coule be ignored as a more detailed version is provided in the report.  
+Comments could be ignored as a more detailed version is provided in the report.  
 From this file, we stored the selected best models and the scaler used for standardisation, which will be used for building the subsequent website.  
 Additionally, for the part of reading the CSV file, 
 ```bash
