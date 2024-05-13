@@ -22,7 +22,7 @@ You can install these packages using pip:
 pip install scipy==1.11.4 scikit-learn==1.2.2 Flask==2.2.5 pandas==2.2.1 numpy==1.26.4 matplotlib==3.8.0 seaborn==0.12.2 statsmodels==0.14.0 joblib==1.2.0
 ```
 
-## Alyssa_case_study.ipyhb
+## Alyssa_case_study.ipynb
 This file primarily focuses on data preprocessing, model fitting, and model selection.  
 Comments coule be ignored as a more detailed version is provided in the report.  
 From this file, we stored the selected best models and the scaler used for standardisation, which will be used for building the subsequent website.  
