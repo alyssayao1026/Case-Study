@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Pollution Indice Prediction</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #483d8a;
+            margin: 10%;
+            padding: 0;
+        }
+        
+        .header, h2 {
+            background-color: #a9f1d0;
+            color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        #prediction-form {
+            background-color: #a998cd;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }        
+        
+        #prediction-form input[type="number"],
+        #prediction-form select {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        #prediction-form label,
+        #prediction-form input[type="number"],
+        #prediction-form select {
+            display: block;
+            clear: both;
+            float: none;
+            margin-bottom: 20px;
+        }
+        #prediction-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #a9f1d0;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+        }
+        
+        #prediction-form button:hover {
+            background-color: #0056b3;
+        }
+        #prediction-result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h2>Air Pollution Indice Prediction</h2>
+    <form id="prediction-form">
+        <label for="prediction-type">Choose a prediction type:</label>
+        <select id="prediction-type">
+            <option value="CO(GT)">CO(GT)</option>
+            <option value="PT08.S1(CO)">PT08.S1(CO)</option>
+            <option value="NMHC(GT)">NMHC(GT)</option>
+            <option value="C6H6(GT)">C6H6(GT)</option>
+            <option value="PT08.S2(NMHC)">PT08.S2(NMHC)</option>
+            <option value="NOx(GT)">NOx(GT)</option>
+            <option value="PT08.S3(NOx)">PT08.S3(NOx)</option>
+            <option value="NO2(GT)">NO2(GT)</option>
+            <option value="PT08.S4(NO2)">PT08.S4(NO2)</option>
+            <option value="PT08.S5(O3)">PT08.S5(O3)</option>
+            <option value="T">T</option>
+            <option value="RH">RH</option>
+            <option value="AH">AH</option>
+        </select>
+        <br>
+        <div id="input-fields">
+        </div>
+        <br>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="prediction-result"></div>
+    <script>
+        document.getElementById('prediction-type').addEventListener('change', function() {
+            const predictionType = this.value;
+            const inputFieldsDiv = document.getElementById('input-fields');
+            inputFieldsDiv.innerHTML = ''; 
+            
+            const featureNames = ['CO(GT)', 'PT08.S1(CO)', 'NMHC(GT)', 'C6H6(GT)', 'PT08.S2(NMHC)', 'NOx(GT)', 'PT08.S3(NOx)', 'NO2(GT)', 'PT08.S4(NO2)', 'PT08.S5(O3)', 'T', 'RH', 'AH'];
+            const featureInputs = featureNames.map(feature => {
+
+                result = '';
+                if (feature == featureNames[0]) {
+                    result += `<label for="Month">Month:</label>
+                    <input type="number" step="any" name="Month" id="Month" required><br>`;
+                }
+                if (feature == predictionType) {
+                    return result;
+                }
+                result += `<label for="${feature}">${feature}:</label>
+                <input type="number" step="any" name="${feature}" id="${feature}" required><br>`;
+                return result;
+            });
+
+            inputFieldsDiv.innerHTML = featureInputs.join('');
+        });
+
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const predictionType = document.getElementById('prediction-type').value;
+            const monthValue = parseInt(formData.get('Month'));
+
+            if (isNaN(monthValue) || monthValue < 1 || monthValue > 12) {
+                const predictionResultDiv = document.getElementById('prediction-result');
+                predictionResultDiv.textContent = "Error: Month must be an integer between 1 and 12";
+                return; 
+            }
+            let isValid = true;
+            for (let pair of formData.entries()) {
+                if (isNaN(pair[1]) || parseFloat(pair[1]) < 0) {
+                    isValid = false;
+                    break;
+                }
+            }
+        
+            if (!isValid) {
+                const predictionResultDiv = document.getElementById('prediction-result');
+                predictionResultDiv.textContent = "Error: All input values must be greater than or equal to 0";
+                return;
+            }
+
+            formData.append('selected-prediction-type', predictionType);
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            })
+            .then(response => response.json())
+            .then(data => {
+                const predictionResultDiv = document.getElementById('prediction-result');
+                if (data.error) {
+                    predictionResultDiv.textContent = `Error: ${data.error}`;
+                } else {
+                    predictionResultDiv.textContent = `Prediction: ${data.prediction}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error predicting:', error);
+            });
+        });        
+    </script>
+</body>
+</html>
